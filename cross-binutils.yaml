@@ -1,0 +1,47 @@
+package:
+  name: binutils
+  version: 2.38
+  epoch: 0
+  description: "the GNU binary utilities (cross compilation)"
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+      - "*"
+      attestation: TODO
+      license: GPL-3.0-or-later
+  dependencies:
+    runtime:
+
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    packages:
+      - alpine-baselayout-data
+      - busybox
+      - build-base
+      - scanelf
+      - ssl_client
+      - ca-certificates-bundle
+      - texinfo
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://ftp.gnu.org/gnu/binutils/${{package.name}}-${{package.version}}.tar.gz
+      expected-sha256: b3f1dc5b17e75328f19bd88250bee2ef9f91fc8cbb7bd48bdb31390338636052
+  - name: 'Configure binutils'
+    runs: |
+      ./configure \
+        --prefix=/usr \
+        --libdir=/lib \
+        --target=$(uname -m)-pc-linux-gnu \
+        --disable-nls \
+        --disable-werror
+  - uses: autoconf/make
+  - uses: autoconf/make-install
+  - name: 'Clean up host aliases'
+    runs: |
+      rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
+  - uses: strip

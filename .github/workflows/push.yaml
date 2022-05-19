@@ -1,0 +1,32 @@
+name: Build action
+
+on: push
+
+jobs:
+  build:
+    name: Build stage1 packages
+    runs-on: ubuntu-latest
+
+    # https://docs.github.com/en/actions/reference/authentication-in-a-workflow
+    permissions:
+      id-token: write
+      packages: write
+      contents: read
+
+    steps:
+      - name: Generate snapshot date
+        id: snapshot-date
+        run: |
+          echo ::set-output name=date::$(date -u +%Y%m%d)
+          echo ::set-output name=epoch::$(date -u +%s)
+        shell: bash
+
+      - uses: actions/checkout@main
+      - uses: chainguard-dev/actions/setup-melange@main
+      - uses: chainguard-dev/actions/melange-keygen@main
+        with:
+          install-public-key: false
+      - uses: chainguard-dev/actions/melange-build-pkg@main
+        with:
+          config: cross-binutils.yaml
+          archs: x86_64
