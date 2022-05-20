@@ -1,0 +1,79 @@
+package:
+  name: cross-gcc-stage1
+  version: 11.2.1_git20220219
+  epoch: 0
+  description: "the GNU binary utilities (cross compilation)"
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+      - "*"
+      attestation: TODO
+      license: GPL-3.0-or-later
+  dependencies:
+    runtime:
+
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    packages:
+      - alpine-baselayout-data
+      - busybox
+      - build-base
+      - scanelf
+      - ssl_client
+      - ca-certificates-bundle
+      - texinfo
+      - gmp-dev
+      - mpfr-dev
+      - mpc1-dev
+      - zlib-dev
+      - gawk
+      - zip
+      - bison
+      - flex
+      - cross-binutils-stage1
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://gitlab.alpinelinux.org/ariadne/alpine-gcc-patches.git
+      branch: alpine/11.2
+  - name: 'Configure GCC'
+    runs: |
+      ./configure \
+        --prefix=/usr \
+        --libdir=/lib \
+        --target=$(uname -m)-pc-linux-gnu \
+        --disable-nls \
+        --disable-werror \
+        --with-glibc-version=2.35 \
+        --with-newlib \
+        --with-sysroot=/usr/$(uname -m)-pc-linux-gnu \
+        --without-headers \
+        --enable-initfini-array \
+        --disable-nls \
+        --disable-shared \
+        --disable-multilib \
+        --disable-decimal-float \
+        --disable-threads \
+        --disable-libatomic \
+        --disable-libgomp \
+        --disable-libquadmath \
+        --disable-libssp \
+        --disable-libvtv \
+        --disable-libstdcxx \
+        --enable-languages=c,c++
+  - uses: autoconf/make
+  - uses: autoconf/make-install
+  - name: 'Clean up host aliases'
+    runs: |
+      rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
+  - name: 'Fix up limits.h'
+    runs: |
+      target=$(uname -m)-pc-linux-gnu
+
+      cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
+        `dirname $($target-gcc -print-libgcc-file-name)`/install-tools/include/limits.h
+  - uses: strip
