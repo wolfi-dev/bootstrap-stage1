@@ -1,5 +1,5 @@
 package:
-  name: binutils
+  name: cross-binutils-stage1
   version: 2.38
   epoch: 0
   description: "the GNU binary utilities (cross compilation)"
