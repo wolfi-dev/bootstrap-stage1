@@ -24,9 +24,9 @@ jobs:
       - uses: actions/checkout@main
       - uses: chainguard-dev/actions/setup-melange@main
       - uses: chainguard-dev/actions/melange-keygen@main
+      - uses: ./actions/build-pkg
         with:
-          install-public-key: false
-      - uses: chainguard-dev/actions/melange-build-pkg@main
+          package-name: cross-binutils
+      - uses: ./actions/build-pkg
         with:
-          config: cross-binutils.yaml
-          archs: x86_64
+          package-name: cross-gcc
