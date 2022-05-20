@@ -30,3 +30,6 @@ jobs:
       - uses: ./actions/build-pkg
         with:
           package-name: cross-gcc
+      - uses: ./actions/build-pkg
+        with:
+          package-name: cross-linux-headers

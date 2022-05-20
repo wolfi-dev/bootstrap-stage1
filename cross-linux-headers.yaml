@@ -1,0 +1,42 @@
+package:
+  name: cross-linux-headers
+  version: 5.16.9
+  epoch: 0
+  description: "the Linux kernel headers (cross compilation)"
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+      - "*"
+      attestation: TODO
+      license: GPL-3.0-or-later
+  dependencies:
+    runtime:
+
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    packages:
+      - alpine-baselayout-data
+      - busybox
+      - build-base
+      - scanelf
+      - ssl_client
+      - ca-certificates-bundle
+
+pipeline:
+  - uses: fetch
+    with:
+      url: https://www.kernel.org/pub/linux/kernel/v5.x/linux-${{package.version}}.tar.xz
+      expected-sha256: 1660e7228ec299c187c19739d115ded97f6b1be05a24986c4c443e7c5e8b744f
+  - runs: |
+      make mrproper
+  - runs: |
+      make headers
+      find usr/include -name '.*' -delete
+      rm usr/include/Makefile
+
+      # Copy to cross-sysroot
+      cp -rv usr/include ${{target.destdir}}/usr/$(uname -m)-pc-linux-gnu/usr/include
+  - uses: strip
