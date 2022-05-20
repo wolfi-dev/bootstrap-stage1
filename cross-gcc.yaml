@@ -79,9 +79,13 @@ pipeline:
       rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
   - name: 'Fix up limits.h'
     runs: |
-      PATH=$PATH:${{targets.destdir}/usr/bin
+      PATH=$PATH:${{targets.destdir}}/usr/bin
       target=$(uname -m)-pc-linux-gnu
+      libgcc=$($target-gcc -print-libgcc-file-name)
 
+      echo libgcc -- $libgcc
+
+      cd build
       cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
-        `dirname $($target-gcc -print-libgcc-file-name)`/install-tools/include/limits.h
+        $(dirname $libgcc)/install-tools/include/limits.h
   - uses: strip
