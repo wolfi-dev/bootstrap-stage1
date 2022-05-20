@@ -20,6 +20,8 @@ environment:
     packages:
       - alpine-baselayout-data
       - busybox
+      - tar
+      - xz
       - build-base
       - scanelf
       - ssl_client
@@ -28,8 +30,8 @@ environment:
 pipeline:
   - uses: fetch
     with:
-      url: https://www.kernel.org/pub/linux/kernel/v5.x/linux-${{package.version}}.tar.xz
-      expected-sha256: 1660e7228ec299c187c19739d115ded97f6b1be05a24986c4c443e7c5e8b744f
+      uri: https://www.kernel.org/pub/linux/kernel/v5.x/linux-${{package.version}}.tar.gz
+      expected-sha256: ca84521580c9e2a5d7648a6b98150780b0e65bc8fac85c3a07d00b1b9aa68ad3
   - runs: |
       make mrproper
   - runs: |
@@ -38,5 +40,5 @@ pipeline:
       rm usr/include/Makefile
 
       # Copy to cross-sysroot
-      cp -rv usr/include ${{target.destdir}}/usr/$(uname -m)-pc-linux-gnu/usr/include
-  - uses: strip
+      mkdir -p ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu/usr
+      cp -rv usr/include ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu/usr/include
