@@ -40,9 +40,14 @@ pipeline:
     with:
       repository: https://gitlab.alpinelinux.org/ariadne/alpine-gcc-patches.git
       branch: alpine/11.2
+      destination: ./gcc
+  - name: 'Set up build directory'
+    runs: |
+      mkdir build
   - name: 'Configure GCC'
     runs: |
-      ./configure \
+      cd build
+      ../gcc/configure \
         --prefix=/usr \
         --libdir=/lib \
         --target=$(uname -m)-pc-linux-gnu \
@@ -65,13 +70,16 @@ pipeline:
         --disable-libvtv \
         --disable-libstdcxx \
         --enable-languages=c,c++
-  - uses: autoconf/make
-  - uses: autoconf/make-install
+  - runs: |
+      make -C build -j$(nproc)
+  - runs: |
+      make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}"
   - name: 'Clean up host aliases'
     runs: |
       rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
   - name: 'Fix up limits.h'
     runs: |
+      PATH=$PATH:${{targets.destdir}/usr/bin
       target=$(uname -m)-pc-linux-gnu
 
       cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
