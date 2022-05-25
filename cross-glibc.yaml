@@ -37,6 +37,7 @@ environment:
       - cross-gcc-stage1
       - cross-linux-headers
       - python3
+      - grep
 
 pipeline:
   - uses: fetch
