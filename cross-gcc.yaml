@@ -1,6 +1,6 @@
 package:
   name: cross-gcc-stage1
-  version: 11.2.1_git20220219
+  version: 11.3.0
   epoch: 0
   description: "the GNU binary utilities (cross compilation)"
   target-architecture:
@@ -36,18 +36,17 @@ environment:
       - cross-binutils-stage1
 
 pipeline:
-  - uses: git-checkout
+  - uses: fetch
     with:
-      repository: https://gitlab.alpinelinux.org/ariadne/alpine-gcc-patches.git
-      branch: alpine/11.2
-      destination: ./gcc
+      uri: https://gcc.gnu.org/pub/gcc/releases/gcc-${{package.version}}/gcc-${{package.version}}.tar.gz
+      expected-sha256: 98438e6cc7294298b474cf0da7655d9a8c8b796421bb0210531c294a950374ed
   - name: 'Set up build directory'
     runs: |
       mkdir build
   - name: 'Configure GCC'
     runs: |
       cd build
-      ../gcc/configure \
+      ../configure \
         --prefix=/usr \
         --libdir=/lib \
         --target=$(uname -m)-pc-linux-gnu \
