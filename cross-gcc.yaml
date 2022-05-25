@@ -91,4 +91,7 @@ pipeline:
 #      cd build
 #      cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
 #        $(dirname $libgcc)/install-tools/include/limits.h
+  - name: 'Clean up documentation'
+    runs: |
+      rm -rf ${{targets.destdir}}/usr/share/info
   - uses: strip

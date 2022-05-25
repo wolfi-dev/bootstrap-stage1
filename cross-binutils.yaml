@@ -44,4 +44,7 @@ pipeline:
   - name: 'Clean up host aliases'
     runs: |
       rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
+  - name: 'Clean up documentation'
+    runs: |
+      rm -rf ${{targets.destdir}}/usr/share/info
   - uses: strip
