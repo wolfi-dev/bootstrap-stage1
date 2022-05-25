@@ -33,3 +33,6 @@ jobs:
       - uses: ./actions/build-pkg
         with:
           package-name: cross-linux-headers
+      - uses: ./actions/build-pkg
+        with:
+          package-name: cross-glibc

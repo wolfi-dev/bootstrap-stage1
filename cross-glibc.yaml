@@ -1,0 +1,70 @@
+package:
+  name: cross-glibc-stage1
+  version: 2.35
+  epoch: 0
+  description: "the GNU C library"
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+      - "*"
+      attestation: TODO
+      license: GPL-3.0-or-later
+  dependencies:
+    runtime:
+
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    packages:
+      - alpine-baselayout-data
+      - busybox
+      - build-base
+      - scanelf
+      - ssl_client
+      - ca-certificates-bundle
+      - texinfo
+      - gmp-dev
+      - mpfr-dev
+      - mpc1-dev
+      - zlib-dev
+      - gawk
+      - zip
+      - bison
+      - flex
+      - cross-binutils-stage1
+      - cross-gcc-stage1
+      - cross-linux-headers
+      - python3
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: http://ftp.gnu.org/gnu/libc/glibc-${{package.version}}.tar.gz
+      expected-sha256: 3e8e0c6195da8dfbd31d77c56fb8d99576fb855fafd47a9e0a895e51fd5942d4
+  - name: 'Set up build directory'
+    runs: |
+      mkdir build
+  - name: 'Configure GCC'
+    runs: |
+      cd build
+      ../configure \
+        --prefix=/ \
+        --libdir=/lib \
+        --host=$(uname -m)-pc-linux-gnu \
+        --build=$(../config.guess) \
+        --disable-nls \
+        --disable-werror \
+        --enable-kernel=4.9 \
+        --with-sysroot=/usr/$(uname -m)-pc-linux-gnu \
+        --with-headers=/usr/$(uname -m)-pc-linux-gnu/usr/include \
+        --disable-nls
+  - runs: |
+      make -C build -j$(nproc)
+  - runs: |
+      make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}"
+#  - name: 'Clean up host aliases'
+#    runs: |
+#      rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
+  - uses: strip
