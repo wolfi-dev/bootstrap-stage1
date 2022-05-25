@@ -61,6 +61,7 @@ pipeline:
         --disable-nls \
         --disable-shared \
         --disable-multilib \
+        --disable-libcc1 \
         --disable-decimal-float \
         --disable-threads \
         --disable-libatomic \
