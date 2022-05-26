@@ -12,6 +12,7 @@ package:
       license: GPL-3.0-or-later
   dependencies:
     runtime:
+      - cross-linux-headers
 
 environment:
   contents:
@@ -53,6 +54,7 @@ pipeline:
       ../configure \
         --prefix=/ \
         --libdir=/lib \
+        --includedir=/usr/include \
         --host=$(uname -m)-pc-linux-gnu \
         --build=$(../config.guess) \
         --disable-nls \
@@ -64,7 +66,7 @@ pipeline:
   - runs: |
       make -C build -j$(nproc)
   - runs: |
-      make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}"
+      make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu"
 #  - name: 'Clean up host aliases'
 #    runs: |
 #      rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
