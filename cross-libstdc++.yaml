@@ -2,7 +2,7 @@ package:
   name: cross-libstdc++-stage1
   version: 11.3.0
   epoch: 0
-  description: "the GNU binary utilities (cross compilation)"
+  description: "the GNU C++ STL implementation (cross compilation)"
   target-architecture:
     - all
   copyright:
@@ -55,13 +55,14 @@ pipeline:
         --target=$(uname -m)-pc-linux-gnu \
         --build=$(../config.guess) \
         --disable-nls \
+        --disable-multilib \
         --disable-werror \
         --disable-libstdcxx-pch \
-        --with-gxx-include-dir=/usr/$(uname -m)-pc-linux-gnu/include/c++/${{package.version}}
+        --with-gxx-include-dir=/usr/include/c++/${{package.version}}
   - runs: |
       make -C build -j$(nproc)
   - runs: |
-      make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}"
+      make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu"
   - name: 'Clean up documentation'
     runs: |
       rm -rf ${{targets.destdir}}/usr/share/info
