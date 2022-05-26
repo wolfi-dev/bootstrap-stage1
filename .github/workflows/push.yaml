@@ -34,6 +34,10 @@ jobs:
         with:
           project_id: 831150642568
 
+      - name: 'Check that GCloud is properly configured'
+        run: |
+          gcloud info
+
       - uses: chainguard-dev/actions/setup-melange@main
       - uses: chainguard-dev/actions/melange-keygen@main
       - uses: ./actions/build-pkg
