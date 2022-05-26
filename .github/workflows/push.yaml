@@ -36,3 +36,6 @@ jobs:
       - uses: ./actions/build-pkg
         with:
           package-name: cross-glibc
+      - uses: ./actions/build-pkg
+        with:
+          package-name: cross-libstdc++

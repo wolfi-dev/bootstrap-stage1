@@ -1,0 +1,68 @@
+package:
+  name: cross-libstdc++-stage1
+  version: 11.3.0
+  epoch: 0
+  description: "the GNU binary utilities (cross compilation)"
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+      - "*"
+      attestation: TODO
+      license: GPL-3.0-or-later
+  dependencies:
+    runtime:
+
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    packages:
+      - alpine-baselayout-data
+      - busybox
+      - build-base
+      - scanelf
+      - ssl_client
+      - ca-certificates-bundle
+      - texinfo
+      - gmp-dev
+      - mpfr-dev
+      - mpc1-dev
+      - zlib-dev
+      - gawk
+      - zip
+      - bison
+      - flex
+      - cross-binutils-stage1
+      - cross-gcc-stage1
+      - cross-glibc-stage1
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://gcc.gnu.org/pub/gcc/releases/gcc-${{package.version}}/gcc-${{package.version}}.tar.gz
+      expected-sha256: 98438e6cc7294298b474cf0da7655d9a8c8b796421bb0210531c294a950374ed
+  - name: 'Set up build directory'
+    runs: |
+      mkdir build
+  - name: 'Configure GCC'
+    runs: |
+      cd build
+      ../libstdc++-v3/configure \
+        --prefix=/usr \
+        --libdir=/lib \
+        --host=$(uname -m)-pc-linux-gnu \
+        --target=$(uname -m)-pc-linux-gnu \
+        --build=$(../config.guess) \
+        --disable-nls \
+        --disable-werror \
+        --disable-libstdcxx-pch \
+        --with-gxx-include-dir=/usr/$(uname -m)-pc-linux-gnu/include/c++/${{package.version}}
+  - runs: |
+      make -C build -j$(nproc)
+  - runs: |
+      make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}"
+  - name: 'Clean up documentation'
+    runs: |
+      rm -rf ${{targets.destdir}}/usr/share/info
+  - uses: strip
