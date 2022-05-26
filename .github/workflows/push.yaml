@@ -23,21 +23,6 @@ jobs:
 
       - uses: actions/checkout@main
 
-      - id: auth
-        name: 'Authenticate to Google Cloud'
-        uses: google-github-actions/auth@v0
-        with:
-          workload_identity_provider: 'projects/831150642568/locations/global/workloadIdentityPools/ariadne-pool/providers/github'
-          service_account: 'inky-bootstrap-stage1@ariadne-chainguard.iam.gserviceaccount.com'
-
-      - uses: google-github-actions/setup-gcloud@v0
-        with:
-          project_id: 831150642568
-
-      - name: 'Check that GCloud is properly configured'
-        run: |
-          gcloud info
-
       - uses: chainguard-dev/actions/setup-melange@main
       - uses: chainguard-dev/actions/melange-keygen@main
       - uses: ./actions/build-pkg
@@ -56,8 +41,23 @@ jobs:
         with:
           package-name: cross-libstdc++
 
+      - id: auth
+        name: 'Authenticate to Google Cloud'
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: 'projects/831150642568/locations/global/workloadIdentityPools/gh-pool/providers/github'
+          service_account: 'inky-bootstrap-stage1@ariadne-chainguard.iam.gserviceaccount.com'
+
+      - uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ariadne-chainguard
+
+      - name: 'Check that GCloud is properly configured'
+        run: |
+          gcloud info
+
       - name: 'Upload the repository to a bucket'
         run: |
           # Copy the public key so that stage2 can use it as a reference.
           cp ${{ github.workspace }}/melange.rsa.pub ${{ github.workspace }}/packages/melange.rsa.pub
-          gsutil rsync -R ${{ github.workspace }}/packages/ gs://inky-bootstrap-stage1/
+          gcloud --quiet alpha storage cp --recursive ${{ github.workspace }}/packages/ gs://inky-bootstrap-stage1/
