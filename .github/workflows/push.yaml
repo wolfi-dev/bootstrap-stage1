@@ -22,6 +22,14 @@ jobs:
         shell: bash
 
       - uses: actions/checkout@main
+
+      - id: auth
+        name: 'Authenticate to Google Cloud'
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: 'projects/831150642568/locations/global/workloadIdentityPools/ariadne-pool/providers/github'
+          service_account: 'inky-bootstrap-stage1@ariadne-chainguard.iam.gserviceaccount.com'
+
       - uses: chainguard-dev/actions/setup-melange@main
       - uses: chainguard-dev/actions/melange-keygen@main
       - uses: ./actions/build-pkg
