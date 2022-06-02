@@ -25,19 +25,19 @@ jobs:
 
       - uses: chainguard-dev/actions/setup-melange@main
       - uses: chainguard-dev/actions/melange-keygen@main
-      - uses: ./actions/build-pkg
+      - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-binutils
-      - uses: ./actions/build-pkg
+      - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-gcc
-      - uses: ./actions/build-pkg
+      - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-linux-headers
-      - uses: ./actions/build-pkg
+      - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-glibc
-      - uses: ./actions/build-pkg
+      - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-libstdc++
 
