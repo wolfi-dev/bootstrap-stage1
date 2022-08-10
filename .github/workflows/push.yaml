@@ -1,6 +1,11 @@
 name: Build action
 
-on: push
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
 
 jobs:
   build:
@@ -21,36 +26,46 @@ jobs:
           echo ::set-output name=epoch::$(date -u +%s)
         shell: bash
 
-      - uses: actions/checkout@main
-
+      - uses: actions/checkout@v3
       - uses: chainguard-dev/actions/setup-melange@main
-      - uses: chainguard-dev/actions/melange-keygen@main
+
+      - run: echo "${{ secrets.MELANGE_RSA }}" > /tmp/melange.rsa
+
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-binutils
+          signing-key-path: /tmp/melange.rsa
+
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-gcc
+          signing-key-path: /tmp/melange.rsa
+
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-linux-headers
+          signing-key-path: /tmp/melange.rsa
+
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-glibc
+          signing-key-path: /tmp/melange.rsa
+
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-libstdc++
+          signing-key-path: /tmp/melange.rsa
 
       - id: auth
         name: 'Authenticate to Google Cloud'
         uses: google-github-actions/auth@v0
         with:
-          workload_identity_provider: 'projects/831150642568/locations/global/workloadIdentityPools/gh-pool/providers/github'
-          service_account: 'inky-bootstrap-stage1@ariadne-chainguard.iam.gserviceaccount.com'
+          workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
+          service_account: "staging-images-ci@staging-images-183e.iam.gserviceaccount.com"
 
       - uses: google-github-actions/setup-gcloud@v0
         with:
-          project_id: ariadne-chainguard
+          project_id: staging-images-183e
 
       - name: 'Check that GCloud is properly configured'
         run: |
@@ -58,6 +73,6 @@ jobs:
 
       - name: 'Upload the repository to a bucket'
         run: |
-          # Copy the public key so that stage2 can use it as a reference.
-          cp ${{ github.workspace }}/melange.rsa.pub ${{ github.workspace }}/packages/melange.rsa.pub
-          gcloud --quiet alpha storage cp --recursive ${{ github.workspace }}/packages/ gs://inky-bootstrap-stage1/
+          # TODO: remove this comment after the validation test
+          # gcloud --quiet alpha storage cp --recursive ${{ github.workspace }}/packages/ gs://wolfi-registry-source/bootstrap/stage1/
+          gcloud --quiet alpha storage cp --recursive ${{ github.workspace }}/packages/ gs://test-cpanato/bootstrap/stage1/
