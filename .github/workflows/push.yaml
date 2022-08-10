@@ -30,6 +30,7 @@ jobs:
       - uses: chainguard-dev/actions/setup-melange@main
 
       - run: echo "${{ secrets.MELANGE_RSA }}" > /tmp/melange.rsa
+      - run: echo "${{ secrets.MELANGE_RSA_PUB }}" > /etc/apk/keys/melange.rsa.pub
 
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
