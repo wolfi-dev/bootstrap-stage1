@@ -27,10 +27,10 @@ jobs:
         shell: bash
 
       - uses: actions/checkout@v3
-      - uses: chainguard-dev/actions/setup-melange@main
-
       - run: echo "${{ secrets.MELANGE_RSA }}" > /tmp/melange.rsa
-      - run: sudo echo "${{ secrets.MELANGE_RSA_PUB }}" > /etc/apk/keys/melange.rsa.pub
+      - run: sudo cp melange.rsa.pub /etc/apk/keys/
+
+      - uses: chainguard-dev/actions/setup-melange@main
 
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
