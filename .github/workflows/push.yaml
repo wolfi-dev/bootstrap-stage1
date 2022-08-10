@@ -28,7 +28,7 @@ jobs:
 
       - uses: actions/checkout@v3
       - run: echo "${{ secrets.MELANGE_RSA }}" > /tmp/melange.rsa
-      - run: sudo cp melange.rsa.pub /etc/apk/keys/
+      - run: sudo cp ./melange.rsa.pub /etc/apk/keys/melange.rsa.pub
 
       - uses: chainguard-dev/actions/setup-melange@main
 
