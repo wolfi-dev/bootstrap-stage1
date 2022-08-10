@@ -30,7 +30,7 @@ jobs:
       - uses: chainguard-dev/actions/setup-melange@main
 
       - run: echo "${{ secrets.MELANGE_RSA }}" > /tmp/melange.rsa
-      - run: echo "${{ secrets.MELANGE_RSA_PUB }}" > /etc/apk/keys/melange.rsa.pub
+      - run: sudo echo "${{ secrets.MELANGE_RSA_PUB }}" > /etc/apk/keys/melange.rsa.pub
 
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
@@ -74,6 +74,7 @@ jobs:
 
       - name: 'Upload the repository to a bucket'
         run: |
+          cp /etc/apk/keys/melange.rsa.pub ${{ github.workspace }}/packages/melange.rsa.pub
           # TODO: remove this comment after the validation test
           # gcloud --quiet alpha storage cp --recursive ${{ github.workspace }}/packages/ gs://wolfi-registry-source/bootstrap/stage1/
           gcloud --quiet alpha storage cp --recursive ${{ github.workspace }}/packages/ gs://test-cpanato/bootstrap/stage1/
