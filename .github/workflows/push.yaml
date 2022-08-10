@@ -72,6 +72,4 @@ jobs:
       - name: 'Upload the repository to a bucket'
         run: |
           cp /etc/apk/keys/melange.rsa.pub ${{ github.workspace }}/packages/melange.rsa.pub
-          # TODO: remove this comment after the validation test
-          # gcloud --quiet alpha storage cp --recursive ${{ github.workspace }}/packages/ gs://wolfi-registry-source/bootstrap/stage1/
-          gcloud --quiet alpha storage cp --recursive ${{ github.workspace }}/packages/ gs://test-cpanato/bootstrap/stage1/
+          gcloud --quiet alpha storage cp --recursive ${{ github.workspace }}/packages/ gs://wolfi-registry-source/bootstrap/stage1/
