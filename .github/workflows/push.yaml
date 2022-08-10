@@ -27,7 +27,7 @@ jobs:
         shell: bash
 
       - uses: actions/checkout@v3
-      - run: echo "${{ secrets.MELANGE_RSA }}" > /tmp/melange.rsa
+      - run: echo "${{ secrets.MELANGE_RSA }}" > ./melange.rsa
       - run: |
           sudo mkdir -p /etc/apk/keys
           sudo cp ./melange.rsa.pub /etc/apk/keys/melange.rsa.pub
@@ -37,27 +37,22 @@ jobs:
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-binutils
-          signing-key-path: /tmp/melange.rsa
 
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-gcc
-          signing-key-path: /tmp/melange.rsa
 
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-linux-headers
-          signing-key-path: /tmp/melange.rsa
 
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-glibc
-          signing-key-path: /tmp/melange.rsa
 
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-libstdc++
-          signing-key-path: /tmp/melange.rsa
 
       - id: auth
         name: 'Authenticate to Google Cloud'
