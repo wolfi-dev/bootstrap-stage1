@@ -77,19 +77,11 @@ pipeline:
   - name: 'Clean up host aliases'
     runs: |
       rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
-# TODO(kaniini): LFS says this is needed, but Alpine has nothing like it, so
-# I am not sure.  Investigate further.
-#  - name: 'Fix up limits.h'
-#    runs: |
-#      PATH=$PATH:${{targets.destdir}}/usr/bin
-#      target=$(uname -m)-pc-linux-gnu
-#      libgcc=$($target-gcc -print-libgcc-file-name)
-#
-#      echo libgcc -- $libgcc
-#
-#      cd build
-#      cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
-#        $(dirname $libgcc)/install-tools/include/limits.h
+  - name: 'Fix includes'
+    runs: |
+      FULLPATH=${{targets.destdir}}/lib/gcc/$(uname -m)-pc-linux-gnu/${{package.version}}
+      mv $FULLPATH/include-fixed/syslimits.h $FULLPATH/include/syslimits.h
+      mv $FULLPATH/include-fixed/limits.h $FULLPATH/include/limits.h
   - name: 'Clean up documentation'
     runs: |
       rm -rf ${{targets.destdir}}/usr/share/info
