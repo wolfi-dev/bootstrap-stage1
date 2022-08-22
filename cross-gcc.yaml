@@ -1,6 +1,6 @@
 package:
   name: cross-gcc-stage1
-  version: 11.3.0
+  version: 12.2.0
   epoch: 0
   description: "the GNU binary utilities (cross compilation)"
   target-architecture:
@@ -39,7 +39,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://gcc.gnu.org/pub/gcc/releases/gcc-${{package.version}}/gcc-${{package.version}}.tar.gz
-      expected-sha256: 98438e6cc7294298b474cf0da7655d9a8c8b796421bb0210531c294a950374ed
+      expected-sha256: ac6b317eb4d25444d87cf29c0d141dedc1323a1833ec9995211b13e1a851261c
   - name: 'Set up build directory'
     runs: |
       mkdir build
