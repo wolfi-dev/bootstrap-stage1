@@ -50,7 +50,6 @@ pipeline:
       ../configure \
         --target=$(uname -m)-pc-linux-gnu \
         --prefix=/usr \
-        --libdir=/lib \
         --disable-nls \
         --disable-werror \
         --with-glibc-version=2.35 \

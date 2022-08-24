@@ -35,7 +35,6 @@ pipeline:
     runs: |
       ./configure \
         --prefix=/usr \
-        --libdir=/lib \
         --target=$(uname -m)-pc-linux-gnu \
         --disable-nls \
         --disable-werror \
