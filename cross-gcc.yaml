@@ -1,8 +1,8 @@
 package:
   name: cross-gcc-stage1
   version: 12.2.0
-  epoch: 0
-  description: "the GNU binary utilities (cross compilation)"
+  epoch: 1
+  description: "the GNU compiler collection (cross compilation)"
   target-architecture:
     - all
   copyright:
@@ -28,6 +28,7 @@ environment:
       - gmp-dev
       - mpfr-dev
       - mpc1-dev
+      - isl-dev
       - zlib-dev
       - gawk
       - zip
@@ -47,9 +48,9 @@ pipeline:
     runs: |
       cd build
       ../configure \
+        --target=$(uname -m)-pc-linux-gnu \
         --prefix=/usr \
         --libdir=/lib \
-        --target=$(uname -m)-pc-linux-gnu \
         --disable-nls \
         --disable-werror \
         --with-glibc-version=2.35 \
