@@ -79,7 +79,7 @@ pipeline:
       rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
   - name: 'Fix includes'
     runs: |
-      FULLPATH=${{targets.destdir}}/usr/lib/gcc/$(uname -m)-pc-linux-gnu/${{package.version}}
+      FULLPATH=${{targets.destdir}}/lib/gcc/$(uname -m)-pc-linux-gnu/${{package.version}}
       mv $FULLPATH/include-fixed/syslimits.h $FULLPATH/include/syslimits.h
       mv $FULLPATH/include-fixed/limits.h $FULLPATH/include/limits.h
   - name: 'Clean up documentation'
