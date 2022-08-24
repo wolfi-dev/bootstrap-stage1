@@ -25,6 +25,7 @@ environment:
       - ssl_client
       - ca-certificates-bundle
       - texinfo
+      - isl-dev
 
 pipeline:
   - uses: fetch
@@ -38,9 +39,18 @@ pipeline:
         --target=$(uname -m)-pc-linux-gnu \
         --disable-nls \
         --disable-werror \
+        --disable-multilib \
+        --disable-gprofng \
         --with-sysroot=/usr/$(uname -m)-pc-linux-gnu
   - uses: autoconf/make
   - uses: autoconf/make-install
+  - name: 'Add target aliases'
+    runs: |
+      BASE="${{targets.destdir}}"/usr/libexec/gcc/$(uname -m)-pc-linux-gnu
+
+      mkdir -p $BASE
+      ln -f ${{targets.destdir}}/usr/bin/$(uname -m)-pc-linux-gnu-as $BASE/as
+      ln -f ${{targets.destdir}}/usr/bin/$(uname -m)-pc-linux-gnu-ld $BASE/ld
   - name: 'Clean up documentation'
     runs: |
       rm -rf ${{targets.destdir}}/usr/share/info
