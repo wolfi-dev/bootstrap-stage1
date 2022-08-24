@@ -51,6 +51,9 @@ pipeline:
       mkdir -p $BASE
       ln -f ${{targets.destdir}}/usr/bin/$(uname -m)-pc-linux-gnu-as $BASE/as
       ln -f ${{targets.destdir}}/usr/bin/$(uname -m)-pc-linux-gnu-ld $BASE/ld
+  - name: 'Clean up BFD plugins'
+    runs: |
+      rm -rf ${{targets.destdir}}/usr/lib/bfd-plugins
   - name: 'Clean up documentation'
     runs: |
       rm -rf ${{targets.destdir}}/usr/share/info
