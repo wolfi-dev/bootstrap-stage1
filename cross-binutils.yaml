@@ -1,6 +1,6 @@
 package:
   name: cross-binutils-stage1
-  version: 2.38
+  version: 2.39
   epoch: 0
   description: "the GNU binary utilities (cross compilation)"
   target-architecture:
@@ -30,7 +30,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://ftp.gnu.org/gnu/binutils/binutils-${{package.version}}.tar.gz
-      expected-sha256: b3f1dc5b17e75328f19bd88250bee2ef9f91fc8cbb7bd48bdb31390338636052
+      expected-sha256: d12ea6f239f1ffe3533ea11ad6e224ffcb89eb5d01bbea589e9158780fa11f10
   - name: 'Configure binutils'
     runs: |
       ./configure \
@@ -38,12 +38,10 @@ pipeline:
         --libdir=/lib \
         --target=$(uname -m)-pc-linux-gnu \
         --disable-nls \
-        --disable-werror
+        --disable-werror \
+        --with-sysroot=/usr/$(uname -m)-pc-linux-gnu
   - uses: autoconf/make
   - uses: autoconf/make-install
-  - name: 'Clean up host aliases'
-    runs: |
-      rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
   - name: 'Clean up documentation'
     runs: |
       rm -rf ${{targets.destdir}}/usr/share/info
