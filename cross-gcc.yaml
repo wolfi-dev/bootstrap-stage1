@@ -1,7 +1,7 @@
 package:
   name: cross-gcc-stage1
   version: 12.2.0
-  epoch: 1
+  epoch: 2
   description: "the GNU compiler collection (cross compilation)"
   target-architecture:
     - all
@@ -77,9 +77,16 @@ pipeline:
   - name: 'Clean up host aliases'
     runs: |
       rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
-  - name: 'Fix includes'
+  - name: 'Fix limits.h'
     runs: |
-      FULLPATH=${{targets.destdir}}/lib/gcc/$(uname -m)-pc-linux-gnu/${{package.version}}
+      FULLPATH=${{targets.destdir}}/usr/lib/gcc/$(uname -m)-pc-linux-gnu/${{package.version}}
+
+      cat gcc/limitx.h gcc/glimits.h gcc/limity.h > $FULLPATH/include-fixed/limits.h
+      cat gcc/gsyslimits.h > $FULLPATH/include-fixed/syslimits.h
+  - name: 'Move fixed includes into main directory'
+    runs: |
+      FULLPATH=${{targets.destdir}}/usr/lib/gcc/$(uname -m)-pc-linux-gnu/${{package.version}}
+
       mv $FULLPATH/include-fixed/syslimits.h $FULLPATH/include/syslimits.h
       mv $FULLPATH/include-fixed/limits.h $FULLPATH/include/limits.h
   - name: 'Clean up documentation'
