@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build stage1 packages
-    runs-on: ubuntu-8-core
+    runs-on: ubuntu-latest
 
     # https://docs.github.com/en/actions/reference/authentication-in-a-workflow
     permissions:
