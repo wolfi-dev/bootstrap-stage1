@@ -31,7 +31,6 @@ environment:
       - isl-dev
       - zlib-dev
       - gawk
-      - zip
       - bison
       - flex
       - cross-binutils-stage1
