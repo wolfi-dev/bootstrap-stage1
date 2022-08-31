@@ -27,10 +27,10 @@ jobs:
         shell: bash
 
       - uses: actions/checkout@v3
-      - run: echo "${{ secrets.MELANGE_RSA }}" > ./melange.rsa
+      - run: echo "${{ secrets.MELANGE_RSA }}" > ./wolfi-signing.rsa
       - run: |
           sudo mkdir -p /etc/apk/keys
-          sudo cp ./melange.rsa.pub /etc/apk/keys/melange.rsa.pub
+          sudo cp ./wolfi-signing.rsa.pub /etc/apk/keys/wolfi-signing.rsa.pub
 
       - uses: chainguard-dev/actions/setup-melange@main
 
@@ -71,5 +71,5 @@ jobs:
 
       - name: 'Upload the repository to a bucket'
         run: |
-          cp /etc/apk/keys/melange.rsa.pub ${{ github.workspace }}/packages/melange.rsa.pub
+          cp /etc/apk/keys/wolfi-signing.rsa.pub ${{ github.workspace }}/packages/wolfi-signing.rsa.pub
           gcloud --quiet alpha storage cp --recursive ${{ github.workspace }}/packages/ gs://wolfi-registry-source/bootstrap/stage1/
