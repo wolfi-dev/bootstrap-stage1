@@ -34,6 +34,22 @@ jobs:
 
       - uses: chainguard-dev/actions/setup-melange@main
 
+      - id: auth
+        name: 'Authenticate to Google Cloud'
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
+          service_account: "staging-images-ci@staging-images-183e.iam.gserviceaccount.com"
+
+      - uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: staging-images-183e
+
+      - name: 'Check that GCloud is properly configured'
+        run: |
+          gcloud info
+          gcloud alpha storage ls
+
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-binutils
@@ -53,21 +69,6 @@ jobs:
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
           package-name: cross-libstdc++
-
-      - id: auth
-        name: 'Authenticate to Google Cloud'
-        uses: google-github-actions/auth@v0
-        with:
-          workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
-          service_account: "staging-images-ci@staging-images-183e.iam.gserviceaccount.com"
-
-      - uses: google-github-actions/setup-gcloud@v0
-        with:
-          project_id: staging-images-183e
-
-      - name: 'Check that GCloud is properly configured'
-        run: |
-          gcloud info
 
       - name: 'Upload the repository to a bucket'
         run: |
