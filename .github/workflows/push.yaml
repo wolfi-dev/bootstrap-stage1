@@ -48,7 +48,7 @@ jobs:
       - name: 'Check that GCloud is properly configured'
         run: |
           gcloud info
-          gcloud alpha storage ls
+          gcloud --quiet alpha storage ls
 
       - uses: chainguard-dev/actions/inky-build-pkg@main
         with:
