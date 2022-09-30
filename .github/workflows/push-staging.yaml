@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build stage1 packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16-core
 
     # https://docs.github.com/en/actions/reference/authentication-in-a-workflow
     permissions:
