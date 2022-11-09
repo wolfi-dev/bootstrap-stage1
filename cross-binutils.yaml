@@ -36,21 +36,21 @@ pipeline:
     runs: |
       ./configure \
         --prefix=/usr \
-        --target=$(uname -m)-pc-linux-gnu \
+        --target=${{host.triplet.gnu}} \
         --disable-nls \
         --disable-werror \
         --disable-multilib \
         --disable-gprofng \
-        --with-sysroot=/usr/$(uname -m)-pc-linux-gnu
+        --with-sysroot=/usr/${{host.triplet.gnu}}
   - uses: autoconf/make
   - uses: autoconf/make-install
   - name: 'Add target aliases'
     runs: |
-      BASE="${{targets.destdir}}"/usr/libexec/gcc/$(uname -m)-pc-linux-gnu
+      BASE="${{targets.destdir}}"/usr/libexec/gcc/${{host.triplet.gnu}}
 
       mkdir -p $BASE
-      ln -f ${{targets.destdir}}/usr/bin/$(uname -m)-pc-linux-gnu-as $BASE/as
-      ln -f ${{targets.destdir}}/usr/bin/$(uname -m)-pc-linux-gnu-ld $BASE/ld
+      ln -f ${{targets.destdir}}/usr/bin/${{host.triplet.gnu}}-as $BASE/as
+      ln -f ${{targets.destdir}}/usr/bin/${{host.triplet.gnu}}-ld $BASE/ld
   - name: 'Clean up BFD plugins'
     runs: |
       rm -rf ${{targets.destdir}}/usr/lib/bfd-plugins

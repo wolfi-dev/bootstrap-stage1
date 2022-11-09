@@ -55,19 +55,19 @@ pipeline:
         --prefix=/ \
         --libdir=/lib \
         --includedir=/usr/include \
-        --host=$(uname -m)-pc-linux-gnu \
+        --host=${{host.triplet.gnu}} \
         --build=$(../config.guess) \
         --disable-nls \
         --disable-werror \
         --enable-kernel=4.9 \
-        --with-sysroot=/usr/$(uname -m)-pc-linux-gnu \
-        --with-headers=/usr/$(uname -m)-pc-linux-gnu/usr/include \
+        --with-sysroot=/usr/${{host.triplet.gnu}} \
+        --with-headers=/usr/${{host.triplet.gnu}}/usr/include \
         --disable-nls
   - runs: |
       make -C build -j$(nproc)
   - runs: |
-      make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu"
+      make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}/usr/${{host.triplet.gnu}}"
 #  - name: 'Clean up host aliases'
 #    runs: |
-#      rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
+#      rm -rf ${{targets.destdir}}/usr/${{host.triplet.gnu}}
   - uses: strip

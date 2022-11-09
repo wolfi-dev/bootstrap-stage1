@@ -55,8 +55,8 @@ pipeline:
       ../libstdc++-v3/configure \
         --prefix=/usr \
         --libdir=/lib \
-        --host=$(uname -m)-pc-linux-gnu \
-        --target=$(uname -m)-pc-linux-gnu \
+        --host=${{host.triplet.gnu}} \
+        --target=${{host.triplet.gnu}} \
         --build=$(../config.guess) \
         --disable-nls \
         --disable-multilib \
@@ -66,7 +66,7 @@ pipeline:
   - runs: |
       make -C build -j$(nproc)
   - runs: |
-      make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu"
+      make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}/usr/${{host.triplet.gnu}}"
   - name: 'Clean up documentation'
     runs: |
       rm -rf ${{targets.destdir}}/usr/share/info

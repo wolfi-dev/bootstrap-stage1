@@ -47,13 +47,13 @@ pipeline:
     runs: |
       cd build
       ../configure \
-        --target=$(uname -m)-pc-linux-gnu \
+        --target=${{host.triplet.gnu}} \
         --prefix=/usr \
         --disable-nls \
         --disable-werror \
         --with-glibc-version=2.35 \
         --with-newlib \
-        --with-sysroot=/usr/$(uname -m)-pc-linux-gnu \
+        --with-sysroot=/usr/${{host.triplet.gnu}} \
         --without-headers \
         --enable-initfini-array \
         --disable-nls \
@@ -75,16 +75,16 @@ pipeline:
       make -C build -j$(nproc) install DESTDIR="${{targets.destdir}}"
   - name: 'Clean up host aliases'
     runs: |
-      rm -rf ${{targets.destdir}}/usr/$(uname -m)-pc-linux-gnu
+      rm -rf ${{targets.destdir}}/usr/${{host.triplet.gnu}}
   - name: 'Fix limits.h'
     runs: |
-      FULLPATH=${{targets.destdir}}/usr/lib/gcc/$(uname -m)-pc-linux-gnu/${{package.version}}
+      FULLPATH=${{targets.destdir}}/usr/lib/gcc/${{host.triplet.gnu}}/${{package.version}}
 
       cat gcc/limitx.h gcc/glimits.h gcc/limity.h > $FULLPATH/include-fixed/limits.h
       cat gcc/gsyslimits.h > $FULLPATH/include-fixed/syslimits.h
   - name: 'Move fixed includes into main directory'
     runs: |
-      FULLPATH=${{targets.destdir}}/usr/lib/gcc/$(uname -m)-pc-linux-gnu/${{package.version}}
+      FULLPATH=${{targets.destdir}}/usr/lib/gcc/${{host.triplet.gnu}}/${{package.version}}
 
       mv $FULLPATH/include-fixed/syslimits.h $FULLPATH/include/syslimits.h
       mv $FULLPATH/include-fixed/limits.h $FULLPATH/include/limits.h
