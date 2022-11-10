@@ -29,28 +29,18 @@ all: ${KEY} ${PACKAGES}
 
 packages/${ARCH}/cross-binutils-stage1-${BINUTILS_VERSION}.apk:
 	${MELANGE} build cross-binutils.yaml ${MELANGE_OPTS}
-	apk index -o packages/${ARCH}/APKINDEX.tar.gz packages/${ARCH}/*.apk --allow-untrusted
-	melange sign-index --signing-key ${KEY} packages/${ARCH}/APKINDEX.tar.gz
 
 packages/${ARCH}/cross-gcc-stage1-${GCC_VERSION}.apk:
 	${MELANGE} build cross-gcc.yaml ${MELANGE_OPTS}
-	apk index -o packages/${ARCH}/APKINDEX.tar.gz packages/${ARCH}/*.apk --allow-untrusted
-	melange sign-index --signing-key ${KEY} packages/${ARCH}/APKINDEX.tar.gz
 
 packages/${ARCH}/cross-linux-headers-${LINUX_HEADERS_VERSION}.apk:
 	${MELANGE} build cross-linux-headers.yaml ${MELANGE_OPTS}
-	apk index -o packages/${ARCH}/APKINDEX.tar.gz packages/${ARCH}/*.apk --allow-untrusted
-	melange sign-index --signing-key ${KEY} packages/${ARCH}/APKINDEX.tar.gz
 
 packages/${ARCH}/cross-glibc-stage1-${GLIBC_VERSION}.apk:
 	${MELANGE} build cross-glibc.yaml ${MELANGE_OPTS}
-	apk index -o packages/${ARCH}/APKINDEX.tar.gz packages/${ARCH}/*.apk --allow-untrusted
-	melange sign-index --signing-key ${KEY} packages/${ARCH}/APKINDEX.tar.gz
 
 packages/${ARCH}/cross-libstdc++-stage1-${LIBSTDCXX_VERSION}.apk:
 	${MELANGE} build cross-libstdc++.yaml ${MELANGE_OPTS}
-	apk index -o packages/${ARCH}/APKINDEX.tar.gz packages/${ARCH}/*.apk --allow-untrusted
-	melange sign-index --signing-key ${KEY} packages/${ARCH}/APKINDEX.tar.gz
 
 ${KEY}:
 	${MELANGE} keygen ${KEY}
