@@ -40,5 +40,5 @@ pipeline:
       rm usr/include/Makefile
 
       # Copy to cross-sysroot
-      mkdir -p ${{targets.destdir}}/usr/${{host.triplet.gnu}}/usr
-      cp -rv usr/include ${{targets.destdir}}/usr/${{host.triplet.gnu}}/usr/include
+      mkdir -p ${{targets.destdir}}/usr/${{cross.triplet.gnu.glibc}}/usr
+      cp -rv usr/include ${{targets.destdir}}/usr/${{cross.triplet.gnu.glibc}}/usr/include
