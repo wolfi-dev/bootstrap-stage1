@@ -65,12 +65,12 @@ jobs:
       - run: |
           dag pod \
             --cpu=30 --ram=100Gi \
-            --bucket=wolfi-registry-source/dag-test/bootstrap/stage1 \
+            --bucket=wolfi-dag-test-bucket/dag-test/bootstrap/stage1 \
             --secret-key
       - run: |
           dag pod \
             --cpu=30 --ram=100Gi \
-            --bucket=wolfi-registry-source/dag-test/bootstrap/stage1 \
+            --bucket=wolfi-dag-test-bucket/dag-test/bootstrap/stage1 \
             --secret-key \
             --arch=arm64
 
