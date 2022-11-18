@@ -1,11 +1,7 @@
-name: Build Packages Production
+name: Build Packages Production (old)
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
-
 
 jobs:
   build:

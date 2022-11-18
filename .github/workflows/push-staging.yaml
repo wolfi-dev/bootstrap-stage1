@@ -1,4 +1,4 @@
-name: Build Packages Staging
+name: Build Packages Staging (old)
 
 on:
   workflow_dispatch:
