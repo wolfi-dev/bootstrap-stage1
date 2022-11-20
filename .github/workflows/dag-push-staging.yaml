@@ -49,18 +49,33 @@ jobs:
       - name: Setup Build Cluster
         working-directory: ./dag
         run: |
-          gcloud container clusters create ${CLUSTER_NAME} \
-            --zone            ${CLUSTER_ZONE}  \
+          # Get our current public IP
+          me=$(printf "%s/32" "$(curl -s https://api.ipify.org)")
+
+          gcloud container clusters create "${CLUSTER_NAME}" \
+            --enable-ip-alias \
+            --network                       projects/staging-shared-7864/global/networks/staging-shared-a6474a3 \
+            --subnetwork                    projects/staging-shared-7864/regions/us-central1/subnetworks/staging-shared-imgs-us-c1-209d340 \
+            --cluster-secondary-range-name  gke-a-pods \
+            --services-secondary-range-name gke-a-svcs \
+            --zone            "${CLUSTER_ZONE}"  \
             --release-channel rapid \
             --workload-pool   "${PROJECT}.svc.id.goog" \
             --machine-type    e2-standard-32 \
-            --num-nodes       1
+            --num-nodes       1 \
+            --project "${PROJECT}" \
+            --tags="egress-inet" \
+            --enable-dataplane-v2 \
+            --enable-intra-node-visibility \
+            --enable-master-authorized-networks \
+            --master-authorized-networks="${me}"
 
           gcloud container node-pools create arm-nodes \
-            --cluster        ${CLUSTER_NAME} \
-            --zone           ${CLUSTER_ZONE} \
+            --cluster        "${CLUSTER_NAME}" \
+            --zone           "${CLUSTER_ZONE}" \
             --machine-type   t2a-standard-32 \
-            --num-nodes      1
+            --num-nodes      1 \
+            --tags="egress-inet"
 
           ./scripts/setup-cluster.sh
 
@@ -79,4 +94,4 @@ jobs:
 
       - name: Teardown Build Cluster
         if: ${{ always() }}
-        run: gcloud container clusters delete tmp-cluster --location=${CLUSTER_ZONE}
+        run: gcloud container clusters delete "${CLUSTER_NAME}" --location="${CLUSTER_ZONE}"
