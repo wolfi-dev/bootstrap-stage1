@@ -16,7 +16,7 @@ package:
 environment:
   contents:
     repositories:
-      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+      - https://mirrors.edge.kernel.org/alpine/edge/main
     packages:
       - alpine-baselayout-data
       - busybox
