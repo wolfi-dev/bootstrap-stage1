@@ -113,7 +113,7 @@ jobs:
             --bucket=wolfi-dag-test-bucket/dag-test/bootstrap/stage1 \
             --secret-key
 
-  build-amd64:
+  build-arm64:
     name: Build (arm64)
     runs-on: ubuntu-latest
     needs: setup-cluster
