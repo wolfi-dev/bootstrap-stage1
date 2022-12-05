@@ -32,7 +32,12 @@ jobs:
         with:
           project_id: ${{env.PROJECT}}
 
+      - uses: actions/checkout@v3
+        with:
+          repository: wolfi-dev/dag
+          path: ${{github.workspace}}/dag
       - name: Setup Build Cluster
+        working-directory: ${{github.workspace}}/dag
         run: |
           # Get our current public IP
           me=$(printf "%s/32" "$(curl -s https://api.ipify.org)")
