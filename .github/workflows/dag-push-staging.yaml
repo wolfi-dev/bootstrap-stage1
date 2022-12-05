@@ -39,9 +39,6 @@ jobs:
       - name: Setup Build Cluster
         working-directory: ${{github.workspace}}/dag
         run: |
-          # Get our current public IP
-          me=$(printf "%s/32" "$(curl -s https://api.ipify.org)")
-
           gcloud container clusters create "${CLUSTER_NAME}" \
             --enable-ip-alias \
             --network                       projects/staging-shared-7864/global/networks/staging-shared-a6474a3 \
@@ -51,8 +48,6 @@ jobs:
             --tags                          "egress-inet" \
             --enable-dataplane-v2 \
             --enable-intra-node-visibility \
-            --enable-master-authorized-networks \
-            --master-authorized-networks="${me}" \
             --service-account staging-images-ci@staging-images-183e.iam.gserviceaccount.com \
             --zone            "${CLUSTER_ZONE}" \
             --release-channel rapid \
