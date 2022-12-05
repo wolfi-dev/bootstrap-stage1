@@ -9,33 +9,21 @@ on:
     branches:
       - dag
 
+env:
+  PROJECT: staging-images-183e
+  CLUSTER_NAME: tmp-cluster
+  CLUSTER_ZONE: us-central1-b
+
 jobs:
-  build:
-    name: Build stage1 packages using dag
+  setup-cluster:
+    name: Setup build cluster
     runs-on: ubuntu-latest
 
     permissions:
       id-token: write
       contents: read
 
-    env:
-      PROJECT: staging-images-183e
-      CLUSTER_NAME: tmp-cluster
-      CLUSTER_ZONE: us-central1-b
-
     steps:
-      # Checkout and build dag from main
-      # Can't `go install` because its go.mod has `replace`s.
-      - uses: actions/setup-go@v3
-        with:
-          go-version: '>=1.19.0'
-      - uses: actions/checkout@v3
-        with:
-          repository: wolfi-dev/dag
-          path: ${{github.workspace}}/dag
-      - working-directory: ${{github.workspace}}/dag
-        run: go install
-
       - uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
@@ -43,7 +31,6 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{env.PROJECT}}
-      - run: gcloud auth configure-docker --quiet
 
       - name: Setup Build Cluster
         working-directory: ${{github.workspace}}/dag
@@ -79,10 +66,40 @@ jobs:
 
           ./scripts/setup-cluster.sh staging-images-ci
 
+  build-amd64:
+    name: Build (amd64)
+    runs-on: ubuntu-latest
+    needs: setup-cluster
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # Checkout and build dag from main
+      # Can't `go install` because its go.mod has `replace`s.
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.19.0'
+      - uses: actions/checkout@v3
+        with:
+          repository: wolfi-dev/dag
+          path: ${{github.workspace}}/dag
+      - working-directory: ${{github.workspace}}/dag
+        run: go install
+
+      - uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
+          service_account: "staging-images-ci@staging-images-183e.iam.gserviceaccount.com"
+      - uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{env.PROJECT}}
       - uses: 'google-github-actions/get-gke-credentials@v0'
         with:
           cluster_name: ${{ env.CLUSTER_NAME }}
           location: ${{ env.CLUSTER_ZONE }}
+      - run: gcloud auth configure-docker --quiet
 
       - uses: actions/checkout@v3
         with:
@@ -96,6 +113,47 @@ jobs:
             --cpu=30 --ram=100Gi \
             --bucket=wolfi-dag-test-bucket/dag-test/bootstrap/stage1 \
             --secret-key
+
+  build-amd64:
+    name: Build (arm64)
+    runs-on: ubuntu-latest
+    needs: setup-cluster
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # Checkout and build dag from main
+      # Can't `go install` because its go.mod has `replace`s.
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.19.0'
+      - uses: actions/checkout@v3
+        with:
+          repository: wolfi-dev/dag
+          path: ${{github.workspace}}/dag
+      - working-directory: ${{github.workspace}}/dag
+        run: go install
+
+      - uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
+          service_account: "staging-images-ci@staging-images-183e.iam.gserviceaccount.com"
+      - uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{env.PROJECT}}
+      - uses: 'google-github-actions/get-gke-credentials@v0'
+        with:
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          location: ${{ env.CLUSTER_ZONE }}
+      - run: gcloud auth configure-docker --quiet
+
+      - uses: actions/checkout@v3
+        with:
+          repository: wolfi-dev/bootstrap-stage1
+          path: ${{github.workspace}}/bootstrap-stage1
+
       - working-directory: ${{github.workspace}}/bootstrap-stage1
         run: |
           dag pod \
@@ -104,8 +162,31 @@ jobs:
             --secret-key \
             --arch=arm64
 
+  teardown-cluster:
+    name: Teardown build cluster
+    runs-on: ubuntu-latest
+    needs: [build-amd64, build-arm64]
+    if: always()
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
+          service_account: "staging-images-ci@staging-images-183e.iam.gserviceaccount.com"
+      - uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{env.PROJECT}}
+      - uses: 'google-github-actions/get-gke-credentials@v0'
+        with:
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          location: ${{ env.CLUSTER_ZONE }}
+
       - name: Collect diagnostics
-        if: ${{ failure() }}
+        if: always()
         run: |
           resources="pods daemonsets serviceaccounts namespaces"
           for ns in $(kubectl get ns -oname | cut -d'/' -f 2); do
@@ -122,7 +203,7 @@ jobs:
           done
 
       - name: Teardown Build Cluster
-        if: ${{ always() }}
+        if: always()
         run: |
           gcloud container clusters delete "${CLUSTER_NAME}" \
             --zone "${CLUSTER_ZONE}" \
