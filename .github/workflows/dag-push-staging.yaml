@@ -33,7 +33,6 @@ jobs:
           project_id: ${{env.PROJECT}}
 
       - name: Setup Build Cluster
-        working-directory: ${{github.workspace}}/dag
         run: |
           # Get our current public IP
           me=$(printf "%s/32" "$(curl -s https://api.ipify.org)")
