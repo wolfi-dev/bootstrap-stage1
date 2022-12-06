@@ -11,7 +11,7 @@ env:
   CLUSTER_NAME: tmp-cluster-staging-stage1
   CLUSTER_ZONE: us-central1-b
   SERVICE_ACCOUNT: staging-images-ci
-  FQ_SERVICE_ACCOUNT: ${{env.SERVICE_ACCOUNT}}@${{env.PROJECT}}.iam.gserviceaccount.com
+  FQ_SERVICE_ACCOUNT: staging-images-ci@staging-images-183e.iam.gserviceaccount.com
   BUCKET: wolfi-dag-test-bucket/dag-test/bootstrap/stage1
 
 jobs:
