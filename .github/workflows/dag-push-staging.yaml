@@ -2,17 +2,17 @@ name: Build Packages Staging using dag
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - dag
 
 env:
   PROJECT: staging-images-183e
-  CLUSTER_NAME: tmp-cluster
+  CLUSTER_NAME: tmp-cluster-staging-stage1
   CLUSTER_ZONE: us-central1-b
+  SERVICE_ACCOUNT: staging-images-ci
+  FQ_SERVICE_ACCOUNT: ${{env.SERVICE_ACCOUNT}}@${{env.PROJECT}}.iam.gserviceaccount.com
+  BUCKET: wolfi-dag-test-bucket/dag-test/bootstrap/stage1
 
 jobs:
   setup-cluster:
@@ -27,7 +27,7 @@ jobs:
       - uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
-          service_account: "staging-images-ci@staging-images-183e.iam.gserviceaccount.com"
+          service_account: ${{env.FQ_SERVICE_ACCOUNT}}
       - uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{env.PROJECT}}
@@ -48,7 +48,7 @@ jobs:
             --tags                          "egress-inet" \
             --enable-dataplane-v2 \
             --enable-intra-node-visibility \
-            --service-account staging-images-ci@staging-images-183e.iam.gserviceaccount.com \
+            --service-account "${FQ_SERVICE_ACCOUNT}" \
             --zone            "${CLUSTER_ZONE}" \
             --release-channel rapid \
             --workload-pool   "${PROJECT}.svc.id.goog" \
@@ -56,14 +56,14 @@ jobs:
             --num-nodes       1
 
           gcloud container node-pools create arm-nodes \
-            --cluster        "${CLUSTER_NAME}" \
-            --zone           "${CLUSTER_ZONE}" \
-            --tags           "egress-inet" \
-            --service-account staging-images-ci@staging-images-183e.iam.gserviceaccount.com \
-            --machine-type   t2a-standard-32 \
-            --num-nodes      1
+            --cluster         "${CLUSTER_NAME}" \
+            --zone            "${CLUSTER_ZONE}" \
+            --tags            "egress-inet" \
+            --service-account "${FQ_SERVICE_ACCOUNT}" \
+            --machine-type    t2a-standard-32 \
+            --num-nodes       1
 
-          ./scripts/setup-cluster.sh staging-images-ci
+          ./scripts/setup-cluster.sh ${SERVICE_ACCOUNT}
 
   build-amd64:
     name: Build (amd64)
@@ -90,7 +90,7 @@ jobs:
       - uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
-          service_account: "staging-images-ci@staging-images-183e.iam.gserviceaccount.com"
+          service_account: ${{env.FQ_SERVICE_ACCOUNT}}
       - uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{env.PROJECT}}
@@ -110,7 +110,7 @@ jobs:
         run: |
           dag pod \
             --cpu=30 --ram=100Gi \
-            --bucket=wolfi-dag-test-bucket/dag-test/bootstrap/stage1 \
+            --bucket=${BUCKET} \
             --secret-key
 
   build-arm64:
@@ -138,7 +138,7 @@ jobs:
       - uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
-          service_account: "staging-images-ci@staging-images-183e.iam.gserviceaccount.com"
+          service_account: ${{env.FQ_SERVICE_ACCOUNT}}
       - uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{env.PROJECT}}
@@ -157,7 +157,7 @@ jobs:
         run: |
           dag pod \
             --cpu=30 --ram=100Gi \
-            --bucket=wolfi-dag-test-bucket/dag-test/bootstrap/stage1 \
+            --bucket=${BUCKET} \
             --secret-key \
             --arch=arm64
 
@@ -175,7 +175,7 @@ jobs:
       - uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
-          service_account: "staging-images-ci@staging-images-183e.iam.gserviceaccount.com"
+          service_account: ${{env.FQ_SERVICE_ACCOUNT}}
       - uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{env.PROJECT}}
