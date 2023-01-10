@@ -54,7 +54,7 @@ jobs:
             --release-channel rapid \
             --workload-pool   "${PROJECT}.svc.id.goog" \
             --machine-type    e2-standard-32 \
-            --num-nodes       1
+            --num-nodes       2
 
           gcloud container node-pools create arm-nodes \
             --cluster         "${CLUSTER_NAME}" \
