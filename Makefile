@@ -1,4 +1,4 @@
-ARCH := $(shell uname -m)
+ARCH ?= $(shell uname -m)
 MELANGE_DIR ?= ../melange
 MELANGE ?= ${MELANGE_DIR}/melange
 KEY ?= local-melange.rsa
