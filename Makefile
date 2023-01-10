@@ -4,12 +4,6 @@ MELANGE ?= ${MELANGE_DIR}/melange
 KEY ?= local-melange.rsa
 REPO ?= $(shell pwd)/packages
 
-ifeq ($(ARCH), $(shell uname -m))
-	USE_PROOT=false
-else
-	USE_PROOT=true
-endif
-
 BINUTILS_VERSION ?= 2.39-r0
 GCC_VERSION ?= 12.2.0-r2
 LINUX_HEADERS_VERSION ?= 5.16.9-r0
@@ -22,8 +16,7 @@ MELANGE_OPTS ?= \
 	--signing-key ${KEY} \
 	--pipeline-dir ${MELANGE_DIR}/pipelines \
 	--arch ${ARCH} \
-	--empty-workspace \
-	--use-proot=${USE_PROOT}
+	--empty-workspace
 
 PACKAGES = \
 	packages/${ARCH}/cross-binutils-stage1-${BINUTILS_VERSION}.apk \
