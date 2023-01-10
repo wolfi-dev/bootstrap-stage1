@@ -13,6 +13,7 @@ env:
   SERVICE_ACCOUNT: staging-images-ci
   FQ_SERVICE_ACCOUNT: staging-images-ci@staging-images-183e.iam.gserviceaccount.com
   BUCKET: wolfi-registry-source/bootstrap/stage1/
+  SRC_BUCKET: gs://wolfi-registry-destination/bootstrap/stage1/
 
 jobs:
   setup-cluster:
@@ -117,6 +118,7 @@ jobs:
           dag pod \
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
+            --src-bucket=${SRC_BUCKET} \
             --secret-key
 
   build-armv7:
@@ -164,6 +166,7 @@ jobs:
           dag pod \
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
+            --src-bucket=${SRC_BUCKET} \
             --secret-key \
             --arch=armv7
 
@@ -212,6 +215,7 @@ jobs:
           dag pod \
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
+            --src-bucket=${SRC_BUCKET} \
             --secret-key \
             --arch=arm64
 
