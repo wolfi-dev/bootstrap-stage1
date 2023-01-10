@@ -8,7 +8,7 @@ on:
 
 env:
   PROJECT: staging-images-183e
-  CLUSTER_NAME: tmp-cluster-staging-stage1
+  CLUSTER_NAME: tmp-cluster-staging-stage1-${{github.run_id}}
   CLUSTER_ZONE: us-central1-b
   SERVICE_ACCOUNT: staging-images-ci
   FQ_SERVICE_ACCOUNT: staging-images-ci@staging-images-183e.iam.gserviceaccount.com
@@ -218,7 +218,7 @@ jobs:
   teardown-cluster:
     name: Teardown build cluster
     runs-on: ubuntu-latest
-    needs: [build-amd64, build-arm64]
+    needs: [build-amd64, build-arm64, build-armv7]
     if: always()
 
     permissions:
