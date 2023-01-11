@@ -98,7 +98,7 @@ jobs:
 
       - uses: google-github-actions/auth@v0
         with:
-          workload_identity_provider: "projects/567187841907/locations/global/workloadIdentityPools/staging-shared-9bd2/providers/staging-shared-gha"
+          workload_identity_provider: "projects/618116202522/locations/global/workloadIdentityPools/prod-shared-e350/providers/prod-shared-gha"
           service_account: ${{env.FQ_SERVICE_ACCOUNT}}
       - uses: google-github-actions/setup-gcloud@v0
         with:
