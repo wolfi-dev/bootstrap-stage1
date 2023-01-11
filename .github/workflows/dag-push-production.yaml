@@ -13,6 +13,7 @@ env:
   SERVICE_ACCOUNT: prod-images-ci
   FQ_SERVICE_ACCOUNT: prod-images-ci@prod-images-c6e5.iam.gserviceaccount.com
   BUCKET: wolfi-production-registry-source/bootstrap/stage1/
+  SRC_BUCKET: gs://wolfi-production-registry-destination/bootstrap/stage1/
 
 jobs:
   setup-cluster:
@@ -110,6 +111,7 @@ jobs:
           dag pod \
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
+            --src-bucket=${SRC_BUCKET} \
             --secret-key
 
   build-arm64:
@@ -157,6 +159,7 @@ jobs:
           dag pod \
             --cpu=30 --ram=100Gi \
             --bucket=${BUCKET} \
+            --src-bucket=${SRC_BUCKET} \
             --secret-key \
             --arch=arm64
 
