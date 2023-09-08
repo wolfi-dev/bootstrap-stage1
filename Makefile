@@ -1,6 +1,5 @@
 ARCH ?= $(shell uname -m)
-MELANGE_DIR ?= ../melange
-MELANGE ?= ${MELANGE_DIR}/melange
+MELANGE ?= $(shell which melange)
 KEY ?= local-melange.rsa
 REPO ?= $(shell pwd)/packages
 
@@ -14,7 +13,6 @@ MELANGE_OPTS ?= \
 	--repository-append ${REPO} \
 	--keyring-append ${KEY}.pub \
 	--signing-key ${KEY} \
-	--pipeline-dir ${MELANGE_DIR}/pipelines \
 	--arch ${ARCH} \
 	--empty-workspace
 

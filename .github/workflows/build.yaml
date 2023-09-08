@@ -1,0 +1,63 @@
+name: Build Stage1 packages (no push)
+
+on:
+  schedule:
+    - cron: '0 0 * * 1' # Every Monday at midnight
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Wolfi Stage1
+    if: github.repository == 'wolfi-dev/bootstrap-stage1'
+
+    strategy:
+      matrix:
+        arch: [ "x86_64", "aarch64" ]
+      fail-fast: false
+
+    runs-on: wolfi-os-builder-${{ matrix.arch }}
+
+    # Ensure this is deprivileged, isolated job
+    # permissions:
+
+    container:
+      image: ghcr.io/wolfi-dev/sdk:latest@sha256:773e310f92525bb5da5352374fe525cf739209d255557ca291532b6d4489e992
+      # TODO: Deprivilege
+      options: |
+        --cap-add NET_ADMIN --cap-add SYS_ADMIN --device /dev/fuse --security-opt seccomp=unconfined --security-opt apparmor:unconfined
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: 'Trust the github workspace'
+        run: |
+          # This is to avoid fatal errors about "dubious ownership" because we are
+          # running inside of a container action with the workspace mounted in.
+          git config --global --add safe.directory "$(pwd)"
+
+      - name: 'Build'
+        run: |
+          make \
+            ARCH=${{ matrix.arch }} \
+            all -j1
+
+      - name: 'Upload built packages archive to Github Artifacts'
+        uses: actions/upload-artifact@v3
+        with:
+          name: packages-${{ matrix.arch }}
+          path: /tmp/packages-${{ matrix.arch }}.tar.gz
+          retention-days: 1 # Low ttl since this is just an intermediary used once
+          if-no-files-found: warn
+
+  postrun:
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - uses: slackapi/slack-github-action@007b2c3c751a190b6f0f040e47ed024deaa72844 # v1.23.0
+        id: slack
+        with:
+          payload: '{"text": "[build-wolfi-stage1] failure: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
