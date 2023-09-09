@@ -4,11 +4,6 @@ on:
   schedule:
     - cron: '0 0 * * 1' # Every Monday at midnight
 
-  # TODO: remove this before merging
-  pull_request:
-    branches:
-      - main
-
   workflow_dispatch:
 
 jobs:
